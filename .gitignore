@@ -6,3 +6,6 @@ node_modules
 .claude
 notes.otl
 rc
+
+
+.ipynb_checkpoints
