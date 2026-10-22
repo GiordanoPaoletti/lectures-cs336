@@ -9,7 +9,8 @@ class BPETokenizer:
     def __init__(self,end_token='<|endoftext|>'):
         self.end_token=end_token
         self.PRETOKENIZER_PATH=PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
-        self.vocabulary=[self.end_token]+[chr(n) for n in range(256)]
+        self.vocabulary={n:bytes((n,)) for n in range(256)}
+        self.vocabulary[len(self.vocabulary)]=self.end_token.encode()
         self.pretok_counter={}
 
     def pretokenization(self,text):
@@ -29,7 +30,7 @@ class BPETokenizer:
                 mapper_bp_to_pretok[byte_pair]=list_pretok
         max_bp=max(bytes_pair_counter,key=lambda x: (bytes_pair_counter[x],x))
         print(n,max_bp)
-        self.vocabulary.append(b"".join(max_bp).decode())
+        self.vocabulary[len(self.vocabulary)]=b"".join(max_bp)
         for pretok in set(mapper_bp_to_pretok[max_bp]):
             new_pretok=[]
             i=0
@@ -57,12 +58,14 @@ class BPETokenizer:
 
 tokenizer=BPETokenizer()
 tokenizer.pretokenization(corpus_test)
-counter=tokenizer.pretok_counter
-for key,value in counter.items():
-    print(key,b"".join(key).decode(),'->',value)
+# counter=tokenizer.pretok_counter
+# for key,value in counter.items():
+#     print(key,b"".join(key).decode(),'->',value)
 
 tokenizer.merges()
 
-counter=tokenizer.pretok_counter
-for key,value in counter.items():
-    print(key,b"".join(key).decode(),'->',value)
+# counter=tokenizer.pretok_counter
+# for key,value in counter.items():
+#     print(key,b"".join(key).decode(),'->',value)
+
+print(tokenizer.vocabulary)
